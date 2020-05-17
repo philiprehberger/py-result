@@ -34,6 +34,12 @@ class Ok(Generic[T, E]):
     def flat_map(self, fn: Callable[[T], Result[U, E]]) -> Result[U, E]:
         return fn(self._value)
 
+    def or_else(self, fn: Callable[[E], Result[T, F]]) -> Result[T, F]:
+        return self  # type: ignore
+
+    def to_dict(self) -> dict:
+        return {"ok": self._value}
+
     def unwrap(self) -> T:
         return self._value
 
@@ -83,6 +89,12 @@ class Err(Generic[T, E]):
 
     def flat_map(self, fn: Callable[[T], Result[U, E]]) -> Result[U, E]:
         return Err(self._error)
+
+    def or_else(self, fn: Callable[[E], Result[T, F]]) -> Result[T, F]:
+        return fn(self._error)
+
+    def to_dict(self) -> dict:
+        return {"err": self._error}
 
     def unwrap(self) -> T:
         if isinstance(self._error, BaseException):
@@ -146,6 +158,6 @@ def all_ok(results: list[Result[T, E]]) -> Result[list[T], E]:
     values: list[T] = []
     for result in results:
         if result.is_err():
-            return result  # type: ignore
+            return Err(result.unwrap_err())
         values.append(result.unwrap())
     return Ok(values)
