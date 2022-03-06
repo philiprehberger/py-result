@@ -116,6 +116,14 @@ combined = all_ok(results)  # Err("fail")
 | `from_awaitable(aw)` | Wrap awaitable in Result |
 | `all_ok(results)` | Collect list of Results into Result of list |
 
+
+## Development
+
+```bash
+pip install -e .
+python -m pytest tests/ -v
+```
+
 ## License
 
 MIT
