@@ -2,7 +2,11 @@
 
 [![Tests](https://github.com/philiprehberger/py-result/actions/workflows/publish.yml/badge.svg)](https://github.com/philiprehberger/py-result/actions/workflows/publish.yml)
 [![PyPI version](https://img.shields.io/pypi/v/philiprehberger-result.svg)](https://pypi.org/project/philiprehberger-result/)
+[![GitHub release](https://img.shields.io/github/v/release/philiprehberger/py-result)](https://github.com/philiprehberger/py-result/releases)
+[![Last updated](https://img.shields.io/github/last-commit/philiprehberger/py-result)](https://github.com/philiprehberger/py-result/commits/main)
 [![License](https://img.shields.io/github/license/philiprehberger/py-result)](LICENSE)
+[![Bug Reports](https://img.shields.io/github/issues/philiprehberger/py-result/bug)](https://github.com/philiprehberger/py-result/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
+[![Feature Requests](https://img.shields.io/github/issues/philiprehberger/py-result/enhancement)](https://github.com/philiprehberger/py-result/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement)
 [![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ec6cb9)](https://github.com/sponsors/philiprehberger)
 
 Rust-inspired Result type for Python with pattern matching and type-safe error handling.
@@ -95,7 +99,32 @@ results = [Ok(1), Err("fail"), Ok(3)]
 combined = all_ok(results)  # Err("fail")
 ```
 
-## API Reference
+### Batch Mapping
+
+```python
+from philiprehberger_result import map_batch
+
+results = [Ok(1), Ok(2), Ok(3)]
+mapped = map_batch(results, lambda x: x * 10)  # Ok([10, 20, 30])
+
+results = [Ok(1), Err("fail"), Ok(3)]
+mapped = map_batch(results, lambda x: x * 10)  # Err("fail")
+```
+
+### Flattening Nested Results
+
+```python
+nested = Ok(Ok(42))
+flat = nested.flatten()  # Ok(42)
+
+nested = Ok(Err("inner error"))
+flat = nested.flatten()  # Err("inner error")
+
+outer_err = Err("outer")
+flat = outer_err.flatten()  # Err("outer")
+```
+
+## API
 
 | Function / Class | Description |
 |---|---|
@@ -109,6 +138,7 @@ combined = all_ok(results)  # Err("fail")
 | `.map_err(fn)` | Transform Err value |
 | `.flat_map(fn)` | Chain Result-returning functions |
 | `.or_else(fn)` | Fallback on Err, pass-through on Ok |
+| `.flatten()` | Flatten nested Results: `Ok(Ok(v))` -> `Ok(v)` |
 | `.match(ok=fn, err=fn)` | Pattern dispatch |
 | `.to_dict()` | Serialize to `{"ok": v}` or `{"err": e}` |
 | `ok(value)` / `err(error)` | Shorthand constructors |
@@ -116,7 +146,7 @@ combined = all_ok(results)  # Err("fail")
 | `try_catch_async(fn)` | Async version |
 | `from_awaitable(aw)` | Wrap awaitable in Result |
 | `all_ok(results)` | Collect list of Results into Result of list |
-
+| `map_batch(results, fn)` | Apply fn to all Ok values; short-circuit on first Err |
 
 ## Development
 
@@ -125,6 +155,13 @@ pip install -e .
 python -m pytest tests/ -v
 ```
 
+## Support
+
+If you find this package useful, consider giving it a star on GitHub — it helps motivate continued maintenance and development.
+
+[![LinkedIn](https://img.shields.io/badge/Philip%20Rehberger-LinkedIn-0A66C2?logo=linkedin)](https://www.linkedin.com/in/philiprehberger)
+[![More packages](https://img.shields.io/badge/more-open%20source%20packages-blue)](https://philiprehberger.com/open-source-packages)
+
 ## License
 
-MIT
+[MIT](LICENSE)
