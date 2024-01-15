@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0 (2026-03-28)
+
+- Add `combine()` function to merge multiple Results into Ok(tuple) or first Err
+- Add `with_context()` method for wrapping errors with context strings
+- Add `collect()` function to convert iterables of Results into a single Result
+- Bring package into full compliance with guides
+
 ## 0.3.0 (2026-03-27)
 
 - Add `map_batch()` function for batch mapping over a list of Results
