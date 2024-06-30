@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "philiprehberger-result"
-version = "0.4.0"
+version = "0.4.1"
 description = "Rust-inspired Result type for Python with pattern matching and type-safe error handling"
 readme = "README.md"
 license = "MIT"
