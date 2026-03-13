@@ -47,6 +47,20 @@ result = (
 )
 ```
 
+### Fallback with or_else
+
+```python
+result = Err("not found").or_else(lambda e: Ok("default"))
+# Ok("default")
+```
+
+### Serialization
+
+```python
+Ok(42).to_dict()    # {"ok": 42}
+Err("x").to_dict()  # {"err": "x"}
+```
+
 ### Try/Catch Wrapping
 
 ```python
@@ -75,6 +89,28 @@ combined = all_ok(results)  # Ok([1, 2, 3])
 results = [Ok(1), Err("fail"), Ok(3)]
 combined = all_ok(results)  # Err("fail")
 ```
+
+## API Reference
+
+| Function / Class | Description |
+|---|---|
+| `Ok(value)` | Success variant — wraps a value |
+| `Err(error)` | Error variant — wraps an error |
+| `.is_ok()` / `.is_err()` | Type check |
+| `.unwrap()` | Get value or raise |
+| `.unwrap_or(default)` | Get value or return default |
+| `.unwrap_err()` | Get error or raise |
+| `.map(fn)` | Transform Ok value |
+| `.map_err(fn)` | Transform Err value |
+| `.flat_map(fn)` | Chain Result-returning functions |
+| `.or_else(fn)` | Fallback on Err, pass-through on Ok |
+| `.match(ok=fn, err=fn)` | Pattern dispatch |
+| `.to_dict()` | Serialize to `{"ok": v}` or `{"err": e}` |
+| `ok(value)` / `err(error)` | Shorthand constructors |
+| `try_catch(fn)` | Wrap callable in Result |
+| `try_catch_async(fn)` | Async version |
+| `from_awaitable(aw)` | Wrap awaitable in Result |
+| `all_ok(results)` | Collect list of Results into Result of list |
 
 ## License
 
