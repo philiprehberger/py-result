@@ -94,7 +94,7 @@ results = [Ok(1), Err("fail"), Ok(3)]
 combined = all_ok(results)  # Err("fail")
 ```
 
-## API Reference
+## API
 
 | Function / Class | Description |
 |---|---|
