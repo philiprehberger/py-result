@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "philiprehberger-result"
-version = "0.2.3"
+version = "0.2.4"
 description = "Rust-inspired Result type for Python with pattern matching and type-safe error handling"
 readme = "README.md"
 license = "MIT"
@@ -31,3 +31,9 @@ Changelog = "https://github.com/philiprehberger/py-result/blob/main/CHANGELOG.md
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/philiprehberger_result"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.mypy]
+strict = true
