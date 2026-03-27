@@ -60,6 +60,12 @@ class Ok(Generic[T, E]):
             return self._value == other._value
         return NotImplemented
 
+    def flatten(self) -> Result:
+        """Flatten nested Results: Ok(Ok(v)) -> Ok(v), Ok(Err(e)) -> Err(e)."""
+        if isinstance(self._value, (Ok, Err)):
+            return self._value
+        return self
+
     def __hash__(self) -> int:
         return hash(("Ok", self._value))
 
@@ -118,6 +124,10 @@ class Err(Generic[T, E]):
             return self._error == other._error
         return NotImplemented
 
+    def flatten(self) -> Result:
+        """Flatten nested Results: Err(e) -> Err(e)."""
+        return self
+
     def __hash__(self) -> int:
         return hash(("Err", self._error))
 
@@ -161,3 +171,13 @@ def all_ok(results: list[Result[T, E]]) -> Result[list[T], E]:
             return Err(result.unwrap_err())
         values.append(result.unwrap())
     return Ok(values)
+
+
+def map_batch(results: list[Result[T, E]], fn: Callable[[T], U]) -> Result[list[U], E]:
+    """Apply fn to all Ok values; short-circuit on first Err."""
+    mapped: list[U] = []
+    for result in results:
+        if result.is_err():
+            return Err(result.unwrap_err())
+        mapped.append(fn(result.unwrap()))
+    return Ok(mapped)
