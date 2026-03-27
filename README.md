@@ -3,6 +3,7 @@
 [![Tests](https://github.com/philiprehberger/py-result/actions/workflows/publish.yml/badge.svg)](https://github.com/philiprehberger/py-result/actions/workflows/publish.yml)
 [![PyPI version](https://img.shields.io/pypi/v/philiprehberger-result.svg)](https://pypi.org/project/philiprehberger-result/)
 [![License](https://img.shields.io/github/license/philiprehberger/py-result)](LICENSE)
+[![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ec6cb9)](https://github.com/sponsors/philiprehberger)
 
 Rust-inspired Result type for Python with pattern matching and type-safe error handling.
 
