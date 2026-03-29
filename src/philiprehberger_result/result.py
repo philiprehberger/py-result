@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TypeVar, Generic, Callable, Union, Awaitable
+from typing import TypeVar, Generic, Callable, Union, Awaitable, Iterable
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -51,6 +51,10 @@ class Ok(Generic[T, E]):
 
     def match(self, *, ok: Callable[[T], U], err: Callable[[E], U]) -> U:
         return ok(self._value)
+
+    def with_context(self, msg: str) -> Result[T, E]:
+        """Return self unchanged since this is an Ok value."""
+        return self
 
     def __repr__(self) -> str:
         return f"Ok({self._value!r})"
@@ -115,6 +119,10 @@ class Err(Generic[T, E]):
 
     def match(self, *, ok: Callable[[T], U], err: Callable[[E], U]) -> U:
         return err(self._error)
+
+    def with_context(self, msg: str) -> Result[T, str]:
+        """Wrap the error value with additional context string."""
+        return Err(f"{msg}: {self._error}")
 
     def __repr__(self) -> str:
         return f"Err({self._error!r})"
@@ -181,3 +189,23 @@ def map_batch(results: list[Result[T, E]], fn: Callable[[T], U]) -> Result[list[
             return Err(result.unwrap_err())
         mapped.append(fn(result.unwrap()))
     return Ok(mapped)
+
+
+def combine(*results: Result) -> Result[tuple, object]:
+    """Take multiple Results and return Ok(tuple of values) if all Ok, or the first Err."""
+    values: list[object] = []
+    for result in results:
+        if result.is_err():
+            return Err(result.unwrap_err())
+        values.append(result.unwrap())
+    return Ok(tuple(values))
+
+
+def collect(iterable: Iterable[Result]) -> Result[list, object]:
+    """Convert an iterable of Result objects into a Result containing a list of Ok values, or the first Err."""
+    values: list[object] = []
+    for result in iterable:
+        if result.is_err():
+            return Err(result.unwrap_err())
+        values.append(result.unwrap())
+    return Ok(values)

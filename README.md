@@ -124,6 +124,40 @@ outer_err = Err("outer")
 flat = outer_err.flatten()  # Err("outer")
 ```
 
+### Combining Multiple Results
+
+```python
+from philiprehberger_result import combine
+
+result = combine(Ok(1), Ok("hello"), Ok(True))
+# Ok((1, "hello", True))
+
+result = combine(Ok(1), Err("fail"), Ok(3))
+# Err("fail")
+```
+
+### Collecting Results from Iterables
+
+```python
+from philiprehberger_result import collect
+
+results = [Ok(1), Ok(2), Ok(3)]
+collected = collect(results)  # Ok([1, 2, 3])
+
+results = [Ok(1), Err("fail"), Ok(3)]
+collected = collect(results)  # Err("fail")
+```
+
+### Adding Error Context
+
+```python
+result = Err("not found").with_context("loading config")
+# Err("loading config: not found")
+
+ok_result = Ok(42).with_context("ignored for Ok")
+# Ok(42)
+```
+
 ## API
 
 | Function / Class | Description |
@@ -147,6 +181,9 @@ flat = outer_err.flatten()  # Err("outer")
 | `from_awaitable(aw)` | Wrap awaitable in Result |
 | `all_ok(results)` | Collect list of Results into Result of list |
 | `map_batch(results, fn)` | Apply fn to all Ok values; short-circuit on first Err |
+| `combine(*results)` | Merge multiple Results into Ok(tuple) or first Err |
+| `collect(iterable)` | Convert iterable of Results into Result of list or first Err |
+| `.with_context(msg)` | Wrap Err with context string; pass-through on Ok |
 
 ## Development
 
