@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0 (2026-04-27)
+
+- Add `transpose()` method on `Ok`/`Err` and top-level `transpose()` function for collapsing nested Result types
+
 ## 0.4.1 (2026-03-31)
 
 - Standardize README to 3-badge format with emoji Support section
@@ -20,12 +24,12 @@
 - Add `[tool.pytest.ini_options]` and `[tool.mypy]` to pyproject.toml
 - Add `.github/` issue templates, PR template, and Dependabot config
 
-## 0.2.3
+## 0.2.3 (2026-03-22)
 
 - Add Development section to README
 - Add wheel build target to pyproject.toml
 
-## 0.2.0
+## 0.2.0 (2026-03-18)
 
 - Add `or_else()` method to Ok and Err for fallback chaining
 - Add `to_dict()` method for serialization
@@ -33,9 +37,9 @@
 - Add comprehensive test suite (~30 tests)
 - Add API reference table to README
 
-## 0.1.1
+## 0.1.1 (2026-03-12)
 
 - Add project URLs to pyproject.toml
 
-## 0.1.0
+## 0.1.0 (2026-03-10)
 - Initial release

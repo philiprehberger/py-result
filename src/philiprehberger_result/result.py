@@ -70,6 +70,16 @@ class Ok(Generic[T, E]):
             return self._value
         return self
 
+    def transpose(self) -> Result:
+        """Collapse a nested Result: Ok(Ok(v)) -> Ok(v), Ok(Err(e)) -> Err(e).
+
+        Raises TypeError if the inner value is not a Result, since transpose
+        only makes sense on nested Results.
+        """
+        if isinstance(self._value, (Ok, Err)):
+            return self._value
+        raise TypeError("Cannot transpose Ok[T] where T is not a Result")
+
     def __hash__(self) -> int:
         return hash(("Ok", self._value))
 
@@ -134,6 +144,10 @@ class Err(Generic[T, E]):
 
     def flatten(self) -> Result:
         """Flatten nested Results: Err(e) -> Err(e)."""
+        return self
+
+    def transpose(self) -> Result:
+        """Collapse a nested Result: Err(e) -> Err(e)."""
         return self
 
     def __hash__(self) -> int:
@@ -209,3 +223,8 @@ def collect(iterable: Iterable[Result]) -> Result[list, object]:
             return Err(result.unwrap_err())
         values.append(result.unwrap())
     return Ok(values)
+
+
+def transpose(result: Result) -> Result:
+    """Collapse a nested Result: Ok(Ok(v)) -> Ok(v), Ok(Err(e)) -> Err(e), Err(e) -> Err(e)."""
+    return result.transpose()

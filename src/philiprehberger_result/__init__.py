@@ -1,4 +1,4 @@
-from .result import Ok, Err, Result, ok, err, try_catch, try_catch_async, from_awaitable, all_ok, map_batch, combine, collect
+from .result import Ok, Err, Result, ok, err, try_catch, try_catch_async, from_awaitable, all_ok, map_batch, combine, collect, transpose
 
 __all__ = [
     "Ok",
@@ -13,4 +13,5 @@ __all__ = [
     "map_batch",
     "combine",
     "collect",
+    "transpose",
 ]

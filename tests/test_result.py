@@ -4,7 +4,7 @@ import asyncio
 
 import pytest
 
-from philiprehberger_result import Ok, Err, ok, err, try_catch, try_catch_async, from_awaitable, all_ok
+from philiprehberger_result import Ok, Err, ok, err, try_catch, try_catch_async, from_awaitable, all_ok, transpose
 
 
 # --- Ok basics ---
@@ -224,3 +224,31 @@ def test_all_ok_success():
 def test_all_ok_with_err():
     result = all_ok([Ok(1), Err("fail"), Ok(3)])
     assert result == Err("fail")
+
+
+# --- transpose ---
+
+class TestTranspose:
+    def test_ok_ok_collapses_to_ok(self):
+        assert Ok(Ok(5)).transpose() == Ok(5)
+
+    def test_ok_err_collapses_to_err(self):
+        assert Ok(Err("e")).transpose() == Err("e")
+
+    def test_err_passes_through(self):
+        assert Err("e").transpose() == Err("e")
+
+    def test_top_level_transpose_ok_ok(self):
+        assert transpose(Ok(Ok(5))) == Ok(5)
+
+    def test_ok_non_result_raises_type_error(self):
+        with pytest.raises(TypeError, match="Cannot transpose"):
+            Ok(5).transpose()
+
+    def test_method_and_function_form_equivalent(self):
+        nested_ok = Ok(Ok(42))
+        nested_err = Ok(Err("boom"))
+        outer_err = Err("outer")
+        assert nested_ok.transpose() == transpose(nested_ok)
+        assert nested_err.transpose() == transpose(nested_err)
+        assert outer_err.transpose() == transpose(outer_err)

@@ -119,6 +119,23 @@ outer_err = Err("outer")
 flat = outer_err.flatten()  # Err("outer")
 ```
 
+### Transpose nested results
+
+```python
+from philiprehberger_result import transpose
+
+transpose(Ok(Ok(5)))       # Ok(5)
+transpose(Ok(Err("bad")))  # Err("bad")
+transpose(Err("outer"))    # Err("outer")
+
+# Method form:
+Ok(Ok(5)).transpose()      # Ok(5)
+Ok(Err("bad")).transpose() # Err("bad")
+```
+
+Unlike `flatten()`, `transpose()` collapses both inner branches and raises
+`TypeError` if the inner value is not itself a `Result`.
+
 ### Combining Multiple Results
 
 ```python
@@ -168,6 +185,7 @@ ok_result = Ok(42).with_context("ignored for Ok")
 | `.flat_map(fn)` | Chain Result-returning functions |
 | `.or_else(fn)` | Fallback on Err, pass-through on Ok |
 | `.flatten()` | Flatten nested Results: `Ok(Ok(v))` -> `Ok(v)` |
+| `.transpose()` / `transpose(result)` | Collapse nested Result: `Ok(Ok(v))` -> `Ok(v)`, `Ok(Err(e))` -> `Err(e)`, `Err(e)` -> `Err(e)` |
 | `.match(ok=fn, err=fn)` | Pattern dispatch |
 | `.to_dict()` | Serialize to `{"ok": v}` or `{"err": e}` |
 | `ok(value)` / `err(error)` | Shorthand constructors |
