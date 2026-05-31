@@ -4,7 +4,7 @@ import asyncio
 
 import pytest
 
-from philiprehberger_result import Ok, Err, ok, err, try_catch, try_catch_async, from_awaitable, all_ok, transpose
+from philiprehberger_result import Ok, Err, ok, err, try_catch, try_catch_async, from_awaitable, all_ok, transpose, partition
 
 
 # --- Ok basics ---
@@ -252,3 +252,56 @@ class TestTranspose:
         assert nested_ok.transpose() == transpose(nested_ok)
         assert nested_err.transpose() == transpose(nested_err)
         assert outer_err.transpose() == transpose(outer_err)
+
+
+# --- partition ---
+
+class TestPartition:
+    def test_mixed_results(self):
+        oks, errs = partition([Ok(1), Err("a"), Ok(2), Err("b"), Ok(3)])
+        assert oks == [1, 2, 3]
+        assert errs == ["a", "b"]
+
+    def test_empty(self):
+        oks, errs = partition([])
+        assert oks == []
+        assert errs == []
+
+    def test_all_ok(self):
+        oks, errs = partition([Ok(1), Ok(2)])
+        assert oks == [1, 2]
+        assert errs == []
+
+    def test_all_err(self):
+        oks, errs = partition([Err("x")])
+        assert oks == []
+        assert errs == ["x"]
+
+
+# --- tap / tap_err ---
+
+class TestTap:
+    def test_ok_tap_calls_fn_and_returns_self(self):
+        collected: list[int] = []
+        result = Ok(5).tap(lambda v: collected.append(v))
+        assert result == Ok(5)
+        assert collected == [5]
+
+    def test_err_tap_is_noop(self):
+        collected: list[object] = []
+        original = Err("boom")
+        result = original.tap(lambda v: collected.append(v))
+        assert result == Err("boom")
+        assert collected == []
+
+    def test_err_tap_err_calls_fn_and_returns_self(self):
+        collected: list[str] = []
+        result = Err("boom").tap_err(lambda e: collected.append(e))
+        assert result == Err("boom")
+        assert collected == ["boom"]
+
+    def test_ok_tap_err_is_noop(self):
+        collected: list[object] = []
+        result = Ok(5).tap_err(lambda e: collected.append(e))
+        assert result == Ok(5)
+        assert collected == []

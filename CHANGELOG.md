@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.0 (2026-05-30)
+
+- Add `partition()` splitting an iterable of Results into `(oks, errs)` lists without short-circuiting
+- Add `Result.tap()` and `Result.tap_err()` for side-effect callbacks that leave the value unchanged
+
 ## 0.5.0 (2026-04-27)
 
 - Add `transpose()` method on `Ok`/`Err` and top-level `transpose()` function for collapsing nested Result types

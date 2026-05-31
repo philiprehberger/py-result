@@ -170,6 +170,35 @@ ok_result = Ok(42).with_context("ignored for Ok")
 # Ok(42)
 ```
 
+### Partitioning
+
+```python
+from philiprehberger_result import Ok, Err, partition
+
+oks, errs = partition([Ok(1), Err("a"), Ok(2), Err("b"), Ok(3)])
+# oks == [1, 2, 3]
+# errs == ["a", "b"]
+```
+
+Unlike `collect()`, `partition()` does not short-circuit on the first `Err` —
+it walks the entire iterable and returns both lists.
+
+### Side-effect taps
+
+```python
+from philiprehberger_result import Ok, Err
+
+Ok(5).tap(lambda v: print(f"got {v}"))
+# prints "got 5", returns Ok(5)
+
+Err("boom").tap_err(lambda e: print(f"error: {e}"))
+# prints "error: boom", returns Err("boom")
+
+# Mismatched variants are no-ops:
+Err("boom").tap(lambda v: print(v))      # does nothing, returns Err("boom")
+Ok(5).tap_err(lambda e: print(e))        # does nothing, returns Ok(5)
+```
+
 ## API
 
 | Function / Class | Description |
@@ -196,7 +225,10 @@ ok_result = Ok(42).with_context("ignored for Ok")
 | `map_batch(results, fn)` | Apply fn to all Ok values; short-circuit on first Err |
 | `combine(*results)` | Merge multiple Results into Ok(tuple) or first Err |
 | `collect(iterable)` | Convert iterable of Results into Result of list or first Err |
+| `partition(results)` | Split iterable of Results into `(oks, errs)` lists without short-circuiting |
 | `.with_context(msg)` | Wrap Err with context string; pass-through on Ok |
+| `Ok.tap(fn)` / `Err.tap(fn)` | Call `fn(value)` on Ok for side effects; no-op on Err; returns self |
+| `Ok.tap_err(fn)` / `Err.tap_err(fn)` | Call `fn(error)` on Err for side effects; no-op on Ok; returns self |
 
 ## Development
 

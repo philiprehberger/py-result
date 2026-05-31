@@ -56,6 +56,15 @@ class Ok(Generic[T, E]):
         """Return self unchanged since this is an Ok value."""
         return self
 
+    def tap(self, fn: Callable[[T], None]) -> Ok[T, E]:
+        """Call fn(self.value) for side effects and return self unchanged."""
+        fn(self._value)
+        return self
+
+    def tap_err(self, fn: Callable[[E], None]) -> Ok[T, E]:
+        """No-op on Ok; returns self unchanged."""
+        return self
+
     def __repr__(self) -> str:
         return f"Ok({self._value!r})"
 
@@ -133,6 +142,15 @@ class Err(Generic[T, E]):
     def with_context(self, msg: str) -> Result[T, str]:
         """Wrap the error value with additional context string."""
         return Err(f"{msg}: {self._error}")
+
+    def tap(self, fn: Callable[[T], None]) -> Err[T, E]:
+        """No-op on Err; returns self unchanged."""
+        return self
+
+    def tap_err(self, fn: Callable[[E], None]) -> Err[T, E]:
+        """Call fn(self.error) for side effects and return self unchanged."""
+        fn(self._error)
+        return self
 
     def __repr__(self) -> str:
         return f"Err({self._error!r})"
@@ -228,3 +246,20 @@ def collect(iterable: Iterable[Result]) -> Result[list, object]:
 def transpose(result: Result) -> Result:
     """Collapse a nested Result: Ok(Ok(v)) -> Ok(v), Ok(Err(e)) -> Err(e), Err(e) -> Err(e)."""
     return result.transpose()
+
+
+def partition(results: Iterable[Result[T, E]]) -> tuple[list[T], list[E]]:
+    """Split an iterable of Results into (ok_values, err_values) lists.
+
+    Unlike collect(), this does not short-circuit on the first Err —
+    it walks the entire iterable, accumulating Ok values into the first
+    list and Err values into the second.
+    """
+    oks: list[T] = []
+    errs: list[E] = []
+    for r in results:
+        if isinstance(r, Ok):
+            oks.append(r.value)
+        else:
+            errs.append(r.error)
+    return oks, errs
